@@ -7,6 +7,9 @@ export default {
   get(page = 1) {
     return apiClient.get(`${resource}?page=${page}`)
   },
+  getWorkers() {
+    return apiClient.get(`${resource}/workers`)
+  },
   find(id) {
     return apiClient.get(`${resource}/${id}`)
   },

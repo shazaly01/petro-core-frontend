@@ -1,14 +1,7 @@
 <template>
   <form @submit.prevent="submitForm" class="space-y-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <AppInput
-        id="supervisor_id"
-        label="معرف المشرف"
-        v-model="form.supervisor_id"
-        placeholder="User ID"
-        :required="true"
-      />
-
+    <!-- ... (قسم حالة الوردية وأوقاتها لم يتغير) ... -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-text-secondary mb-1">
           حالة الوردية
@@ -21,9 +14,7 @@
           <option value="closed">مغلقة (Closed)</option>
         </select>
       </div>
-    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-text-secondary mb-1">
           وقت البداية
@@ -37,13 +28,17 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-text-secondary mb-1">
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-text-secondary mb-1"
+          :class="{ 'opacity-50': form.status === 'open' }"
+        >
           وقت الإغلاق
         </label>
         <input
           type="datetime-local"
           v-model="form.end_at"
-          class="block w-full rounded-md shadow-sm bg-gray-50 border-2 border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-surface-ground dark:border-surface-border dark:text-text-primary p-2"
+          :disabled="form.status === 'open'"
+          class="block w-full rounded-md shadow-sm bg-gray-50 border-2 border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-surface-ground dark:border-surface-border dark:text-text-primary p-2 disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
     </div>
@@ -53,20 +48,22 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <AppInput
         id="total_expected_cash"
-        label="النقد المتوقع (System)"
+        label="النقد المتوقع (د.ل)"
         v-model="form.total_expected_cash"
         type="number"
-        step="0.01"
-        placeholder="0.00"
+        step="0.001"
+        placeholder="0.000"
+        dir="ltr"
       />
 
       <AppInput
         id="total_actual_cash"
-        label="النقد الفعلي (المورد)"
+        label="النقد الفعلي (د.ل)"
         v-model="form.total_actual_cash"
         type="number"
-        step="0.01"
-        placeholder="0.00"
+        step="0.001"
+        placeholder="0.000"
+        dir="ltr"
       />
 
       <div>
@@ -74,9 +71,10 @@
           الفارق (عجز / زيادة)
         </label>
         <input
-          :value="calculatedDifference"
+          :value="formattedDifference"
           readonly
-          class="block w-full rounded-md shadow-sm bg-gray-200 border-2 border-gray-300 text-gray-700 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 p-2 font-bold"
+          dir="ltr"
+          class="block w-full rounded-md shadow-sm bg-gray-200 border-2 border-gray-300 text-gray-700 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 p-2 font-bold text-center"
           :class="{
             'text-red-600 dark:text-red-400': calculatedDifference < 0,
             'text-green-600 dark:text-green-400': calculatedDifference > 0,
@@ -125,7 +123,6 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'cancel'])
 
 const form = reactive({
-  supervisor_id: '',
   start_at: '',
   end_at: '',
   status: 'open',
@@ -135,40 +132,47 @@ const form = reactive({
   handover_notes: '',
 })
 
-// دالة مساعدة لتحويل التاريخ لصيغة يقبلها input datetime-local
-// الصيغة المطلوبة: YYYY-MM-DDTHH:mm
 const formatDateForInput = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
-  // ضبط التوقيت المحلي
   const offset = date.getTimezoneOffset()
   const adjustedDate = new Date(date.getTime() - offset * 60 * 1000)
   return adjustedDate.toISOString().slice(0, 16)
 }
 
-// حساب الفارق تلقائياً للعرض
+// يحسب القيمة الرقمية الخام
 const calculatedDifference = computed(() => {
   const expected = parseFloat(form.total_expected_cash) || 0
   const actual = parseFloat(form.total_actual_cash) || 0
-  return (actual - expected).toFixed(2)
+  return actual - expected
+})
+
+// ينسق القيمة للعرض مع 3 خانات عشرية
+const formattedDifference = computed(() => {
+  return calculatedDifference.value.toLocaleString('en-US', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  })
 })
 
 watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      form.supervisor_id = newVal.supervisor_id
       form.start_at = formatDateForInput(newVal.start_at)
       form.end_at = formatDateForInput(newVal.end_at)
       form.status = newVal.status
-      form.total_expected_cash = newVal.total_expected_cash
-      form.total_actual_cash = newVal.total_actual_cash
-      form.difference = newVal.difference
-      form.handover_notes = newVal.handover_notes
+      form.total_expected_cash = newVal.total_expected_cash || 0
+      form.total_actual_cash = newVal.total_actual_cash || 0
+      form.difference = newVal.difference || 0
+      form.handover_notes = newVal.handover_notes || ''
     } else {
-      // إعدادات افتراضية لوردية جديدة
-      form.supervisor_id = '' // أو نجلب المستخدم الحالي
-      form.start_at = new Date().toISOString().slice(0, 16) // الوقت الحالي
+      // عند إنشاء وردية جديدة
+      const now = new Date()
+      const offset = now.getTimezoneOffset()
+      const adjustedNow = new Date(now.getTime() - offset * 60 * 1000)
+      form.start_at = adjustedNow.toISOString().slice(0, 16)
+
       form.end_at = ''
       form.status = 'open'
       form.total_expected_cash = 0
@@ -181,7 +185,7 @@ watch(
 )
 
 const submitForm = () => {
-  // نقوم بتحديث الفارق قبل الإرسال
+  // إرسال القيمة الرقمية الخام
   form.difference = calculatedDifference.value
   emit('submit', { ...form })
 }

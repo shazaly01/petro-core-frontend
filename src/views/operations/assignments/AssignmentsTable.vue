@@ -1,14 +1,16 @@
 <template>
   <AppTable :headers="headers" :items="items" :is-loading="loading" :row-clickable="false">
     <template #cell-nozzle="{ item }">
-      <span class="font-bold text-primary dark:text-blue-400">
+      <span class="font-bold text-primary dark:text-blue-400" dir="ltr">
         {{ item.nozzle?.code || '---' }}
       </span>
     </template>
 
     <template #cell-user="{ item }">
       <div class="flex flex-col">
-        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ item.user?.name }}</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-white">
+          {{ item.user?.full_name || item.user?.name }}
+        </span>
         <span class="text-xs text-text-muted">ID: {{ item.user_id }}</span>
       </div>
     </template>
@@ -28,11 +30,33 @@
 
     <template #cell-total_amount="{ item }">
       <div class="flex flex-col text-right">
-        <span class="font-bold text-gray-900 dark:text-white"
-          >{{ formatNumber(item.sold_liters) }} لتر</span
-        >
-        <span class="text-xs text-text-muted">{{ formatCurrency(item.total_amount) }}</span>
+        <span class="font-bold text-gray-900 dark:text-white" dir="ltr">
+          {{ formatNumber(item.sold_liters) }} L
+        </span>
+        <span class="text-xs text-text-muted" dir="ltr">{{
+          formatCurrency(item.total_amount)
+        }}</span>
       </div>
+    </template>
+
+    <template #cell-total_paid="{ item }">
+      <span class="text-sm font-bold text-green-600 dark:text-green-400" dir="ltr">
+        {{ formatCurrency(item.total_paid) }}
+      </span>
+    </template>
+
+    <template #cell-remaining_due="{ item }">
+      <span
+        class="text-sm font-bold"
+        dir="ltr"
+        :class="
+          item.remaining_due > 0
+            ? 'text-red-600 dark:text-red-400'
+            : 'text-gray-900 dark:text-gray-300'
+        "
+      >
+        {{ formatCurrency(item.remaining_due) }}
+      </span>
     </template>
 
     <template #cell-actions="{ item }">
@@ -66,12 +90,28 @@ const headers = computed(() => [
   { key: 'user', label: 'العامل المسؤول', class: 'text-right' },
   { key: 'start_counter', label: 'عداد البداية', class: 'text-right' },
   { key: 'end_counter', label: 'عداد النهاية', class: 'text-right' },
-  { key: 'total_amount', label: 'المبيعات', class: 'text-right' },
+  { key: 'total_amount', label: 'المطلوب', class: 'text-right' },
+  { key: 'total_paid', label: 'المدفوع', class: 'text-right' }, // 🛑 تم الإضافة
+  { key: 'remaining_due', label: 'المتبقي', class: 'text-right' }, // 🛑 تم الإضافة
   { key: 'status', label: 'الحالة', class: 'text-right' },
   { key: 'actions', label: '', class: 'w-16' },
 ])
 
-const formatNumber = (val) => new Intl.NumberFormat('ar-EG').format(val || 0)
-const formatCurrency = (val) =>
-  new Intl.NumberFormat('ar-SD', { style: 'currency', currency: 'SDG' }).format(val || 0)
+// 🛑 التنسيق الجديد: استخدام 'en-US' لضمان الأرقام الإنجليزية
+// تنسيق الكميات (لتر) - بخانتين عشريتين
+const formatNumber = (val) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(val || 0)
+}
+
+// 🛑 تنسيق العملة (دينار ليبي) - بـ 3 خانات عشرية كما في قاعدة البيانات
+const formatCurrency = (val) => {
+  const number = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format(val || 0)
+  return `${number} د.ل`
+}
 </script>

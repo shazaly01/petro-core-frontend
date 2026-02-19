@@ -5,6 +5,7 @@ import userService from '@/services/userService'
 export const useUserStore = defineStore('users', {
   state: () => ({
     users: [],
+    workers: [],
     user: null,
     pagination: {},
     loading: false,
@@ -21,6 +22,21 @@ export const useUserStore = defineStore('users', {
       } catch (error) {
         console.error('Failed to fetch users:', error)
         this.users = [] // إجراء وقائي
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchWorkers() {
+      this.loading = true
+      try {
+        const response = await userService.getWorkers()
+        // تخزين النتيجة في مصفوفة workers المستقلة
+        this.workers = response.data.data || []
+      } catch (error) {
+        console.error('Failed to fetch workers:', error)
+        this.workers = []
         throw error
       } finally {
         this.loading = false

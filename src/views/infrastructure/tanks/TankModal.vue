@@ -36,6 +36,7 @@
 
       <div class="p-6 pt-2">
         <TankForm
+          :key="itemData?.id || 'new'"
           :initial-data="itemData"
           :is-saving="isSaving"
           @submit="handleFormSubmit"

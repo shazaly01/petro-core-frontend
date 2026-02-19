@@ -97,11 +97,13 @@ watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      form.pump_id = newVal.pump_id
-      form.tank_id = newVal.tank_id
-      form.code = newVal.code
-      form.current_counter = newVal.current_counter
-      form.is_active = Boolean(newVal.is_active)
+      // [التعديل هنا] تحويل النوع إلى رقم لضمان عمل القوائم المنسدلة
+      form.pump_id = newVal.pump_id ? Number(newVal.pump_id) : ''
+      form.tank_id = newVal.tank_id ? Number(newVal.tank_id) : ''
+
+      form.code = newVal.code || ''
+      form.current_counter = newVal.current_counter || ''
+      form.is_active = newVal.is_active !== undefined ? Boolean(newVal.is_active) : true
     } else {
       // Reset
       form.pump_id = ''
@@ -113,7 +115,6 @@ watch(
   },
   { immediate: true },
 )
-
 const submitForm = () => {
   emit('submit', { ...form })
 }

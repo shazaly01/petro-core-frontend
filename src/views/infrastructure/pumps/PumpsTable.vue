@@ -2,7 +2,7 @@
   <AppTable :headers="headers" :items="items" :is-loading="loading" :row-clickable="false">
     <template #cell-island="{ item }">
       <span class="text-text-secondary">
-        {{ item.island?.name || 'غير محددة' }}
+        {{ item.island || 'غير محددة' }}
       </span>
     </template>
 

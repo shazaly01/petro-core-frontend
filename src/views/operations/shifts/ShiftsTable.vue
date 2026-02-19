@@ -1,5 +1,16 @@
 <template>
   <AppTable :headers="headers" :items="items" :is-loading="loading" :row-clickable="false">
+    <template #cell-shift_info="{ item }">
+      <div class="flex flex-col">
+        <span class="font-bold text-gray-900 dark:text-gray-100">
+          {{ item.name || 'جاري التحميل...' }}
+        </span>
+        <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          رقم الوردية: #{{ item.id }}
+        </span>
+      </div>
+    </template>
+
     <template #cell-status="{ item }">
       <span
         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
@@ -56,11 +67,12 @@ const props = defineProps({
 
 defineEmits(['edit'])
 
+// 🛑 التعديل هنا: تحديث ترويسة الجدول لتعكس العمود المدمج
 const headers = computed(() => [
-  { key: 'id', label: 'رقم الوردية', class: 'text-right' },
+  { key: 'shift_info', label: 'الوردية', class: 'text-right' }, // العمود الجديد المدمج
   { key: 'supervisor', label: 'المشرف المسؤول', class: 'text-right' },
   { key: 'status', label: 'الحالة', class: 'text-right' },
-  { key: 'start_at', label: 'وقت البدء', class: 'text-right' },
+  // تم إزالة عمود start_at لأنه أصبح جزءاً من اسم الوردية
   { key: 'total_actual_cash', label: 'المبلغ المورد', class: 'text-right' },
   { key: 'difference', label: 'العجز / الزيادة', class: 'text-right' },
   { key: 'actions', label: '', class: 'w-32' },

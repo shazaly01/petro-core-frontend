@@ -103,14 +103,15 @@ watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      form.island_id = newVal.island_id
-      form.name = newVal.name
-      form.code = newVal.code
-      form.model = newVal.model
-      form.is_active = Boolean(newVal.is_active)
-      form.notes = newVal.notes
+      // [التعديل هنا] تحويل النوع صراحة إلى رقم ليتطابق مع خيارات القائمة
+      form.island_id = newVal.island_id ? Number(newVal.island_id) : ''
+      form.name = newVal.name || ''
+      form.code = newVal.code || ''
+      form.model = newVal.model || ''
+      form.is_active = newVal.is_active !== undefined ? Boolean(newVal.is_active) : true
+      form.notes = newVal.notes || ''
     } else {
-      // Reset
+      // تصفير النموذج
       form.island_id = ''
       form.name = ''
       form.code = ''

@@ -69,12 +69,11 @@
     </div>
   </form>
 </template>
-
 <script setup>
 import { reactive, watch } from 'vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppButton from '@/components/ui/AppButton.vue'
-import QuantityInput from '@/components/ui/QuantityInput.vue' // ممتاز للسعة
+import QuantityInput from '@/components/ui/QuantityInput.vue'
 import FuelTypesDropdown from '@/components/forms/FuelTypesDropdown.vue'
 
 const props = defineProps({
@@ -97,12 +96,15 @@ watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      form.fuel_type_id = newVal.fuel_type_id
-      form.name = newVal.name
-      form.code = newVal.code
-      form.capacity = newVal.capacity
-      form.current_stock = newVal.current_stock
-      form.alert_threshold = newVal.alert_threshold
+      // التعديل هنا: جلب الـ ID سواء كان مباشراً أو داخل كائن fuel_type
+      const typeId = newVal.fuel_type_id || newVal.fuel_type?.id
+
+      form.fuel_type_id = typeId ? Number(typeId) : ''
+      form.name = newVal.name || ''
+      form.code = newVal.code || ''
+      form.capacity = newVal.capacity || ''
+      form.current_stock = newVal.current_stock || ''
+      form.alert_threshold = newVal.alert_threshold || ''
     } else {
       // تصفير النموذج
       form.fuel_type_id = ''

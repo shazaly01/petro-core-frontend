@@ -60,11 +60,11 @@ const headers = computed(() => [
   { key: 'actions', label: '', class: 'w-20' },
 ])
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'SDG',
-    minimumFractionDigits: 2,
-  }).format(value)
+const formatCurrency = (val) => {
+  const number = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(val || 0)
+  return `${number} د.ل`
 }
 </script>

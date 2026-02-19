@@ -10,7 +10,7 @@
         </p>
       </div>
 
-      <AppButton @click="openCreateModal" variant="primary">
+      <AppButton @click="goToCreatePage" variant="primary">
         <PlusIcon class="h-5 w-5 ml-2" />
         تكليف جديد
       </AppButton>
@@ -28,19 +28,13 @@
       </div>
     </div>
 
-    <AssignmentsTable :items="assignments" :loading="loading" @edit="openEditModal" />
-
-    <AssignmentModal
-      v-model="showModal"
-      :item="selectedItem"
-      :is-saving="isSaving"
-      @save="handleSave"
-    />
+    <AssignmentsTable :items="assignments" :loading="loading" @edit="goToEditPage" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router' // استيراد الراوتر للتنقل
 import { storeToRefs } from 'pinia'
 import { useAssignmentStore } from '@/stores/assignmentStore'
 import { PlusIcon } from '@heroicons/vue/24/outline'
@@ -48,46 +42,31 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AssignmentsTable from './AssignmentsTable.vue'
-import AssignmentModal from './AssignmentModal.vue'
 
+// إعداد الراوتر والمتجر
+const router = useRouter()
 const store = useAssignmentStore()
 const { assignments, loading } = storeToRefs(store)
 
-const showModal = ref(false)
-const selectedItem = ref(null)
-const isSaving = ref(false)
 const searchQuery = ref('')
 
 onMounted(() => store.fetchAssignments())
 
+// البحث
 const handleSearch = () => {
   store.fetchAssignments(1, searchQuery.value)
 }
 
-const openCreateModal = () => {
-  selectedItem.value = null
-  showModal.value = true
+// الانتقال لصفحة إنشاء تكليف جديد
+const goToCreatePage = () => {
+  router.push({ name: 'AssignmentCreate' })
 }
 
-const openEditModal = (item) => {
-  selectedItem.value = { ...item }
-  showModal.value = true
-}
-
-const handleSave = async (formData) => {
-  isSaving.value = true
-  try {
-    if (selectedItem.value?.id) {
-      await store.updateAssignment(selectedItem.value.id, formData)
-    } else {
-      await store.createAssignment(formData)
-    }
-    showModal.value = false
-    await store.fetchAssignments()
-  } catch (error) {
-    console.error('Save Error:', error)
-  } finally {
-    isSaving.value = false
-  }
+// الانتقال لصفحة تعديل تكليف موجود
+const goToEditPage = (item) => {
+  router.push({
+    name: 'AssignmentEdit',
+    params: { id: item.id },
+  })
 }
 </script>

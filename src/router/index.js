@@ -105,6 +105,20 @@ const routes = [
         component: AssignmentsList,
         meta: { permission: 'assignment.view' },
       },
+
+      {
+        path: 'assignments/create',
+        name: 'AssignmentCreate',
+        component: () => import('@/views/operations/assignments/AssignmentForm.vue'), // سنستخدم الفورم مباشرة كصفحة
+        meta: { permission: 'assignment.create', requiresAuth: true },
+      },
+      {
+        path: 'assignments/:id/edit',
+        name: 'AssignmentEdit',
+        component: () => import('@/views/operations/assignments/AssignmentForm.vue'),
+        props: true, // للسماح بتمرير id كـ prop
+        meta: { permission: 'assignment.update', requiresAuth: true },
+      },
       {
         path: 'transactions',
         name: 'TransactionsList',
