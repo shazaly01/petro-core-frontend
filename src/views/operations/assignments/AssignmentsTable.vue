@@ -1,8 +1,14 @@
 <template>
-  <AppTable :headers="headers" :items="items" :is-loading="loading" :row-clickable="false">
-    <template #cell-nozzle="{ item }">
+  <AppTable
+    :headers="headers"
+    :items="items"
+    :is-loading="loading"
+    :row-clickable="true"
+    @row-click="handleRowClick"
+  >
+    <template #cell-pump="{ item }">
       <span class="font-bold text-primary dark:text-blue-400" dir="ltr">
-        {{ item.nozzle?.code || '---' }}
+        {{ item.pump?.name || item.pump?.code || '---' }}
       </span>
     </template>
 
@@ -11,7 +17,7 @@
         <span class="text-sm font-medium text-gray-900 dark:text-white">
           {{ item.user?.full_name || item.user?.name }}
         </span>
-        <span class="text-xs text-text-muted">ID: {{ item.user_id }}</span>
+        <span class="text-xs text-text-muted">ID: {{ item.user?.id || item.user_id }}</span>
       </div>
     </template>
 
@@ -28,42 +34,54 @@
       </span>
     </template>
 
-    <template #cell-total_amount="{ item }">
+    <template #cell-expected_amount="{ item }">
       <div class="flex flex-col text-right">
-        <span class="font-bold text-gray-900 dark:text-white" dir="ltr">
-          {{ formatNumber(item.sold_liters) }} L
+        <span class="text-xs text-gray-500 dark:text-gray-400" dir="ltr">
+          {{ formatNumber(item.total_sold_liters) }} L
         </span>
-        <span class="text-xs text-text-muted" dir="ltr">{{
-          formatCurrency(item.total_amount)
-        }}</span>
+        <span class="font-bold text-gray-900 dark:text-white" dir="ltr">
+          {{ item.expected_amount !== null ? formatCurrency(item.expected_amount) : '---' }}
+        </span>
       </div>
     </template>
 
-    <template #cell-total_paid="{ item }">
+    <template #cell-collected="{ item }">
       <span class="text-sm font-bold text-green-600 dark:text-green-400" dir="ltr">
-        {{ formatCurrency(item.total_paid) }}
+        {{
+          item.status === 'completed'
+            ? formatCurrency(
+                (parseFloat(item.cash_amount) || 0) + (parseFloat(item.bank_amount) || 0),
+              )
+            : '---'
+        }}
       </span>
     </template>
 
-    <template #cell-remaining_due="{ item }">
+    <template #cell-difference="{ item }">
       <span
+        v-if="item.status === 'completed'"
         class="text-sm font-bold"
         dir="ltr"
         :class="
-          item.remaining_due > 0
+          item.difference < 0
             ? 'text-red-600 dark:text-red-400'
-            : 'text-gray-900 dark:text-gray-300'
+            : item.difference > 0
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-gray-500 dark:text-gray-400'
         "
       >
-        {{ formatCurrency(item.remaining_due) }}
+        <span v-if="item.difference < 0">(-) </span>
+        <span v-else-if="item.difference > 0">(+) </span>
+        {{ formatCurrency(Math.abs(item.difference)) }}
       </span>
+      <span v-else class="text-gray-400">---</span>
     </template>
 
     <template #cell-actions="{ item }">
       <div class="flex items-center justify-end gap-2">
         <button
-          @click="$emit('edit', item)"
-          class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+          @click.stop="$emit('edit', item)"
+          class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
           :title="item.status === 'active' ? 'إغلاق التكليف' : 'عرض'"
         >
           <PencilSquareIcon class="h-5 w-5" />
@@ -83,21 +101,24 @@ defineProps({
   loading: Boolean,
 })
 
-defineEmits(['edit'])
+const emit = defineEmits(['edit'])
 
+// 🛑 تحديث الأعمدة لتتناسب مع الهيكلة الجديدة
 const headers = computed(() => [
-  { key: 'nozzle', label: 'المسدس', class: 'text-right' },
+  { key: 'pump', label: 'المضخة', class: 'text-right' },
   { key: 'user', label: 'العامل المسؤول', class: 'text-right' },
-  { key: 'start_counter', label: 'عداد البداية', class: 'text-right' },
-  { key: 'end_counter', label: 'عداد النهاية', class: 'text-right' },
-  { key: 'total_amount', label: 'المطلوب', class: 'text-right' },
-  { key: 'total_paid', label: 'المدفوع', class: 'text-right' }, // 🛑 تم الإضافة
-  { key: 'remaining_due', label: 'المتبقي', class: 'text-right' }, // 🛑 تم الإضافة
-  { key: 'status', label: 'الحالة', class: 'text-right' },
-  { key: 'actions', label: '', class: 'w-16' },
+  { key: 'expected_amount', label: 'المطلوب (لتر/مبلغ)', class: 'text-right' },
+  { key: 'collected', label: 'المدخل (الخزينة)', class: 'text-right' },
+  { key: 'difference', label: 'العجز / الزيادة', class: 'text-right' },
+  { key: 'status', label: 'الحالة', class: 'text-right w-24' },
+  { key: 'actions', label: '', class: 'w-12' },
 ])
 
-// 🛑 التنسيق الجديد: استخدام 'en-US' لضمان الأرقام الإنجليزية
+// 🛑 دالة التعامل مع النقر على الصف
+const handleRowClick = (item) => {
+  emit('edit', item)
+}
+
 // تنسيق الكميات (لتر) - بخانتين عشريتين
 const formatNumber = (val) => {
   return new Intl.NumberFormat('en-US', {
@@ -106,7 +127,7 @@ const formatNumber = (val) => {
   }).format(val || 0)
 }
 
-// 🛑 تنسيق العملة (دينار ليبي) - بـ 3 خانات عشرية كما في قاعدة البيانات
+// تنسيق العملة (دينار ليبي) - بـ 3 خانات عشرية
 const formatCurrency = (val) => {
   const number = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 3,

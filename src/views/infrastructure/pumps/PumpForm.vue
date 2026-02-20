@@ -1,19 +1,30 @@
 <template>
   <form @submit.prevent="submitForm" class="space-y-4">
-    <IslandsDropdown
-      id="island_id"
-      label="الجزيرة التابعة لها"
-      v-model="form.island_id"
-      :required="true"
-      placeholder="اختر الجزيرة..."
-    />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <IslandsDropdown
+        id="island_id"
+        label="الجزيرة التابعة لها"
+        v-model="form.island_id"
+        :required="true"
+        placeholder="اختر الجزيرة..."
+      />
+
+      <TanksDropdown
+        id="tank_id"
+        label="الخزان التابع له"
+        v-model="form.tank_id"
+        :required="true"
+        placeholder="اختر الخزان..."
+      />
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <AppInput
         id="code"
-        label="رقم/كود المضخة"
+        label="رقم/كود المضخة (أرقام فقط)"
+        type="number"
         v-model="form.code"
-        placeholder="مثال: P-01"
+        placeholder="مثال: 10002"
         :required="true"
       />
 
@@ -22,6 +33,32 @@
         label="اسم المضخة"
         v-model="form.name"
         placeholder="مثال: مضخة البنزين الرئيسية"
+        :required="true"
+      />
+    </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700"
+    >
+      <AppInput
+        id="current_counter_1"
+        label="القراءة الحالية للمسدس الأول"
+        type="number"
+        step="0.01"
+        min="0"
+        v-model="form.current_counter_1"
+        placeholder="0.00"
+        :required="true"
+      />
+
+      <AppInput
+        id="current_counter_2"
+        label="القراءة الحالية للمسدس الثاني"
+        type="number"
+        step="0.01"
+        min="0"
+        v-model="form.current_counter_2"
+        placeholder="0.00"
         :required="true"
       />
     </div>
@@ -82,6 +119,8 @@ import { reactive, watch } from 'vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import IslandsDropdown from '@/components/forms/IslandsDropdown.vue'
+// 🛑 استيراد قائمة الخزانات (تأكد من إنشاء هذا المكون إذا لم يكن موجوداً)
+import TanksDropdown from '@/components/forms/TanksDropdown.vue'
 
 const props = defineProps({
   initialData: { type: Object, default: null },
@@ -92,9 +131,12 @@ const emit = defineEmits(['submit', 'cancel'])
 
 const form = reactive({
   island_id: '',
+  tank_id: '', // 🛑 تمت الإضافة
   name: '',
   code: '',
   model: '',
+  current_counter_1: '', // 🛑 تمت الإضافة
+  current_counter_2: '', // 🛑 تمت الإضافة
   is_active: true,
   notes: '',
 })
@@ -103,19 +145,29 @@ watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      // [التعديل هنا] تحويل النوع صراحة إلى رقم ليتطابق مع خيارات القائمة
       form.island_id = newVal.island_id ? Number(newVal.island_id) : ''
+      form.tank_id = newVal.tank_id ? Number(newVal.tank_id) : '' // 🛑 تمت الإضافة
       form.name = newVal.name || ''
       form.code = newVal.code || ''
       form.model = newVal.model || ''
+
+      // 🛑 تمت الإضافة (قراءة العدادات عند التعديل)
+      form.current_counter_1 =
+        newVal.current_counter_1 !== undefined ? Number(newVal.current_counter_1) : ''
+      form.current_counter_2 =
+        newVal.current_counter_2 !== undefined ? Number(newVal.current_counter_2) : ''
+
       form.is_active = newVal.is_active !== undefined ? Boolean(newVal.is_active) : true
       form.notes = newVal.notes || ''
     } else {
       // تصفير النموذج
       form.island_id = ''
+      form.tank_id = '' // 🛑 تمت الإضافة
       form.name = ''
       form.code = ''
       form.model = ''
+      form.current_counter_1 = '' // 🛑 تمت الإضافة
+      form.current_counter_2 = '' // 🛑 تمت الإضافة
       form.is_active = true
       form.notes = ''
     }

@@ -122,7 +122,7 @@ const allNavLinks = shallowRef([
       { name: 'الجزر', routeName: 'IslandsList', permission: 'infrastructure.view' },
       { name: 'الخزانات', routeName: 'TanksList', permission: 'infrastructure.view' },
       { name: 'المضخات', routeName: 'PumpsList', permission: 'infrastructure.view' },
-      { name: 'المسدسات', routeName: 'NozzlesList', permission: 'infrastructure.view' },
+      //{ name: 'المسدسات', routeName: 'NozzlesList', permission: 'infrastructure.view' },
     ],
   },
 
@@ -134,8 +134,8 @@ const allNavLinks = shallowRef([
     children: [
       { name: 'الورديات', routeName: 'ShiftsList', permission: 'shift.view' },
       { name: 'التكليفات', routeName: 'AssignmentsList', permission: 'assignment.view' },
-      { name: 'المعاملات المالية', routeName: 'TransactionsList', permission: 'transaction.view' },
-      { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
+      // { name: 'المعاملات المالية', routeName: 'TransactionsList', permission: 'transaction.view' },
+      // { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
     ],
   },
 
