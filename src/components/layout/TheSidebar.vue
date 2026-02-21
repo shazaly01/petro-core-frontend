@@ -154,6 +154,8 @@ const allNavLinks = shallowRef([
       { name: 'الحركة اليومية', routeName: 'DailyMovementReport', permission: 'reports.view' },
       // 🛑 إضافة كشف حساب الخزان هنا
       { name: 'كشف حساب الخزان', routeName: 'TankLedgerReport', permission: 'reports.view' },
+      { name: 'حركة المخزون', routeName: 'DailySalesMovement', permission: 'reports.view' },
+      { name: 'الخزانات', routeName: 'TanksStockReport', permission: 'reports.view' },
     ],
   },
 

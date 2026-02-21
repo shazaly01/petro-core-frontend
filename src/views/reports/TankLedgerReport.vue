@@ -335,7 +335,8 @@ import { ref, computed } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import TanksDropdown from '@/components/forms/TanksDropdown.vue'
 import { useReportStore } from '@/stores/reportStore' // 🛑 استيراد الـ Store
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 // تهيئة الـ Store
 const reportStore = useReportStore()
 
@@ -402,9 +403,16 @@ const getQuantityColorClass = (move) => {
   return 'text-gray-500'
 }
 
-// دالة الطباعة
+// دالة الطباعة (المعدلة لفتح صفحة الطباعة المستقلة)
 const printReport = () => {
-  window.print()
+  if (!reportData.value) return
+
+  // 1. حفظ البيانات في الجلسة
+  sessionStorage.setItem('tankLedgerPrintData', JSON.stringify(reportData.value))
+
+  // 2. فتح الصفحة النظيفة في تبويبة جديدة
+  const routeData = router.resolve({ name: 'PrintTankLedger' })
+  window.open(routeData.href, '_blank')
 }
 </script>
 

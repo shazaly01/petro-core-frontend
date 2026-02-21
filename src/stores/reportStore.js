@@ -5,9 +5,11 @@ import reportService from '@/services/reportService'
 export const useReportStore = defineStore('report', () => {
   // --- State ---
   const dailyMovementData = ref([])
-  const tankLedgerData = ref(null) // 🛑 1. حالة جديدة لبيانات كشف الخزان
+  const tankLedgerData = ref(null)
+  const fuelReconciliationData = ref(null) // 🛑 1. حالة جديدة لبيانات ميزان حركة الوقود
   const loading = ref(false)
   const error = ref(null)
+  const tanksStockData = ref(null)
 
   // --- Actions ---
 
@@ -26,7 +28,6 @@ export const useReportStore = defineStore('report', () => {
     }
   }
 
-  // 🛑 2. دالة جديدة لجلب كشف حساب الخزان
   async function fetchTankLedger(params = {}) {
     loading.value = true
     error.value = null
@@ -37,7 +38,39 @@ export const useReportStore = defineStore('report', () => {
       error.value = 'فشل في جلب كشف حساب الخزان.'
       console.error(err)
       tankLedgerData.value = null
-      throw err // نرمي الخطأ لكي نعالجه في الشاشة (مثلاً لإظهار رسالة للمستخدم)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 🛑 2. دالة جديدة لجلب تقرير ميزان حركة الوقود (المطابق للصورة)
+  async function fetchFuelReconciliation(params = {}) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await reportService.getFuelReconciliation(params)
+      fuelReconciliationData.value = response.data
+    } catch (err) {
+      error.value = 'فشل في جلب نموذج حركة المبيعات اليومية.'
+      console.error(err)
+      fuelReconciliationData.value = null
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchTanksStockSummary() {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await reportService.getTanksStockSummary()
+      tanksStockData.value = response.data
+    } catch (err) {
+      error.value = 'فشل في جلب تقرير أرصدة الخزانات.'
+      console.error(err)
+      tanksStockData.value = null
     } finally {
       loading.value = false
     }
@@ -46,10 +79,14 @@ export const useReportStore = defineStore('report', () => {
   // --- Return public API ---
   return {
     dailyMovementData,
-    tankLedgerData, // 🛑 تصدير الحالة
+    tankLedgerData,
+    fuelReconciliationData, // 🛑 تصدير الحالة
     loading,
     error,
+    tanksStockData,
     fetchDailyMovement,
-    fetchTankLedger, // 🛑 تصدير الدالة
+    fetchTankLedger,
+    fetchFuelReconciliation, // 🛑 تصدير الدالة
+    fetchTanksStockSummary,
   }
 })

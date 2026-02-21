@@ -43,7 +43,33 @@ const routes = [
       { path: '', redirect: '/login' },
     ],
   },
+  {
+    path: '/print/daily-movement',
+    name: 'PrintDailyMovement',
+    component: () => import('@/views/reports/DailyMovementPrint.vue'),
+    meta: { requiresAuth: true }, // لا تضع layout مخصص هنا ليفتح كصفحة بيضاء
+  },
 
+  {
+    path: '/print/tank-ledger',
+    name: 'PrintTankLedger',
+    component: () => import('@/views/reports/TankLedgerPrint.vue'),
+    meta: { requiresAuth: true },
+  },
+
+  {
+    path: '/print/daily-sales-movement',
+    name: 'PrintDailySalesMovement',
+    component: () => import('@/views/reports/DailySalesMovementPrint.vue'),
+    meta: { requiresAuth: true }, // تأكد من حمايته لكي لا يفتحه شخص غير مسجل دخول
+  },
+
+  {
+    path: '/print/tanks-stock',
+    name: 'PrintTanksStock',
+    component: () => import('@/views/reports/TanksStockPrint.vue'),
+    meta: { requiresAuth: true },
+  },
   // --- 2. المسارات المحمية (Protected) ---
   {
     path: '/app',
@@ -172,6 +198,22 @@ const routes = [
         name: 'TankLedgerReport',
         component: TankLedgerReport,
         meta: { permission: 'reports.view' }, // الصلاحية التي أضفناها في الباك-إند
+      },
+
+      {
+        path: 'reports/daily-sales-movement',
+        name: 'DailySalesMovement',
+        component: () => import('@/views/reports/DailySalesMovement.vue'),
+        meta: {
+          title: 'حركة المبيعات اليومية', // مفيد إذا كنت تستخدمه لتغيير عنوان المتصفح أو الـ Breadcrumbs
+          requiresAuth: true,
+        },
+      },
+      {
+        path: 'reports/tanks-stock',
+        name: 'TanksStockReport',
+        component: () => import('@/views/reports/TanksStockReport.vue'),
+        meta: { title: 'أرصدة الخزانات اللحظية' },
       },
       // إعادة التوجيه الافتراضية
       { path: '', redirect: '/app/dashboard' },

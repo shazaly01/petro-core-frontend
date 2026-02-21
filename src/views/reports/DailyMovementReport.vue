@@ -280,6 +280,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useReportStore } from '@/stores/reportStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import { useRouter } from 'vue-router'
 import {
   PrinterIcon,
   BanknotesIcon,
@@ -290,7 +291,7 @@ import {
 
 // تهيئة الـ Store
 const reportStore = useReportStore()
-
+const router = useRouter()
 // تعيين تاريخ اليوم افتراضياً
 const today = new Date().toISOString().split('T')[0]
 const selectedDate = ref(today)
@@ -322,11 +323,11 @@ const formatNumber = (val) => {
 }
 
 const formatCurrency = (val) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'SDG', // يمكنك تغيير العملة حسب بلدك
-    minimumFractionDigits: 2,
+  const number = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
   }).format(val || 0)
+  return `${number} LYD`
 }
 
 // تحديد ألوان شريط تقدم الخزان بناءً على النسبة
@@ -344,7 +345,14 @@ const getFillColorText = (percentage) => {
 
 // دالة الطباعة
 const printReport = () => {
-  window.print()
+  if (!reportData.value) return
+
+  // 1. حفظ البيانات الحالية في الجلسة لتقرأها صفحة الطباعة
+  sessionStorage.setItem('dailyMovementPrintData', JSON.stringify(reportData.value))
+
+  // 2. فتح صفحة الطباعة في نافذة/علامة تبويب جديدة
+  const routeData = router.resolve({ name: 'PrintDailyMovement' })
+  window.open(routeData.href, '_blank')
 }
 </script>
 
