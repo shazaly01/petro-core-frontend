@@ -2,44 +2,12 @@
 import apiClient from './apiClient'
 
 export default {
-  /**
-   * جلب إحصائيات لوحة التحكم
-   */
-  getDashboardStats() {
-    return apiClient.get('/dashboard')
+  getTankLedger(params) {
+    return apiClient.get('/reports/tank-ledger', { params })
   },
 
-  /**
-   * جلب التقرير العام (ملخص كل الشركات)
-   */
-  getCompaniesSummary() {
-    return apiClient.get('/reports/companies-summary')
+  // 2. 🛑 الدالة الناقصة: جلب تقرير الحركة اليومية
+  getDailyMovement(params) {
+    return apiClient.get('/reports/daily-movement', { params })
   },
-
-  /**
-   * جلب كشف حساب تفصيلي لشركة محددة
-   * @param {String|Number} companyId - المعرف (DECIMAL 18)
-   */
-  getCompanyStatement(companyId) {
-    return apiClient.get(`/reports/company-statement/${companyId}`)
-  },
-
-  // +++ [أضف هذه الدالة الجديدة هنا] +++
-  /**
-   * جلب كشف حساب تفصيلي لجهة مالكة محددة
-   * @param {String|Number} ownerId
-   */
-  getOwnerStatement(ownerId) {
-    return apiClient.get(`/reports/owner-statement/${ownerId}`)
-  },
-
-  /**
-   * [جديد] جلب تقرير مالي للمشاريع بناءً على الفلاتر
-   * @param {Object} params - كائن يحتوي على الفلاتر مثل { project_type_id, completion_status }
-   */
-  getProjectsReportByFilter(params) {
-    // نرسل الفلاتر كـ query parameters مع الطلب
-    return apiClient.get('/reports/projects-by-filter', { params })
-  },
-  // ++++++++++++++++++++++++++++++++++
 }

@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="submitForm" class="space-y-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
       <TanksDropdown
         id="tank_id"
         label="الخزان المستلم"
@@ -8,27 +8,19 @@
         :required="true"
         placeholder="اختر الخزان..."
       />
-
-      <AppInput
-        id="supervisor_id"
-        label="المشرف المستلم"
-        v-model="form.supervisor_id"
-        placeholder="User ID"
-        :required="true"
-      />
     </div>
 
     <hr class="border-gray-200 dark:border-gray-700 my-2" />
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <QuantityInput
+      <AppNumberInput
         id="quantity"
         label="الكمية الموردة (لتر)"
         v-model="form.quantity"
         placeholder="أدخل الكمية"
       />
 
-      <AppInput
+      <AppNumberInput
         id="cost_price"
         label="سعر التكلفة (للتر)"
         v-model="form.cost_price"
@@ -42,7 +34,7 @@
     <div
       class="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg border border-gray-200 dark:border-gray-600 grid grid-cols-1 sm:grid-cols-2 gap-4"
     >
-      <AppInput
+      <AppNumberInput
         id="stock_before"
         label="مخزون ما قبل التعبئة"
         v-model="form.stock_before"
@@ -53,7 +45,7 @@
       />
 
       <div>
-        <AppInput
+        <AppNumberInput
           id="stock_after"
           label="مخزون ما بعد التعبئة"
           v-model="form.stock_after"
@@ -113,9 +105,13 @@
 <script setup>
 import { reactive, watch, computed } from 'vue'
 import AppInput from '@/components/ui/AppInput.vue'
+import AppNumberInput from '@/components/ui/AppNumberInput.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import QuantityInput from '@/components/ui/QuantityInput.vue'
 import TanksDropdown from '@/components/forms/TanksDropdown.vue'
+
+// 🛑 1. استيراد مخزن المصادقة لجلب بيانات المستخدم الحالي
+import { useAuthStore } from '@/stores/authStore'
 
 const props = defineProps({
   initialData: { type: Object, default: null },
@@ -124,9 +120,11 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
+// 🛑 2. تهيئة مخزن المصادقة
+const authStore = useAuthStore()
+
 const form = reactive({
   tank_id: '',
-  supervisor_id: '',
   quantity: '',
   cost_price: '',
   driver_name: '',
@@ -136,19 +134,15 @@ const form = reactive({
   stock_after: '',
 })
 
-// حساب المخزون المتوقع
 const calculatedStockAfter = computed(() => {
   const before = parseFloat(form.stock_before) || 0
   const qty = parseFloat(form.quantity) || 0
   return before + qty
 })
 
-// مراقبة التغييرات لتحديث المخزون البعدي تلقائياً (فقط عند الإدخال الجديد)
 watch([() => form.stock_before, () => form.quantity], () => {
-  if (!props.initialData) {
-    // فقط في وضع الإضافة الجديدة
-    form.stock_after = calculatedStockAfter.value
-  }
+  // الحساب التلقائي يعمل دائماً (في الإضافة والتعديل) بمجرد تغيير الكمية أو المخزون السابق
+  form.stock_after = calculatedStockAfter.value
 })
 
 watch(
@@ -156,7 +150,6 @@ watch(
   (newVal) => {
     if (newVal) {
       form.tank_id = newVal.tank_id
-      form.supervisor_id = newVal.supervisor_id
       form.quantity = newVal.quantity
       form.cost_price = newVal.cost_price
       form.driver_name = newVal.driver_name
@@ -165,9 +158,7 @@ watch(
       form.stock_before = newVal.stock_before
       form.stock_after = newVal.stock_after
     } else {
-      // القيم الافتراضية
       form.tank_id = ''
-      form.supervisor_id = ''
       form.quantity = ''
       form.cost_price = ''
       form.driver_name = ''
@@ -181,7 +172,13 @@ watch(
 )
 
 const submitForm = () => {
-  emit('submit', { ...form })
+  // 🛑 3. إرفاق معرف المستخدم (المشرف) الحالي برمجياً وبشكل مخفي
+  const payload = {
+    ...form,
+    supervisor_id: authStore.user?.id,
+  }
+
+  emit('submit', payload)
 }
 
 const formatNumber = (num) => {

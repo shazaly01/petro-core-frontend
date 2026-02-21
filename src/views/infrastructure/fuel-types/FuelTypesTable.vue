@@ -62,8 +62,8 @@ const headers = computed(() => [
 
 const formatCurrency = (val) => {
   const number = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
   }).format(val || 0)
   return `${number} د.ل`
 }

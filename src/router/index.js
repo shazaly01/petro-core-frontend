@@ -21,11 +21,14 @@ const ShiftsList = () => import('@/views/operations/shifts/ShiftsList.vue')
 const AssignmentsList = () => import('@/views/operations/assignments/AssignmentsList.vue')
 const TransactionsList = () => import('@/views/operations/transactions/TransactionsList.vue')
 const SupplyLogsList = () => import('@/views/operations/supply-logs/SupplyLogsList.vue')
+const InventoryAdjustmentsView = () =>
+  import('@/views/inventory-adjustments/InventoryAdjustmentsView.vue')
 
 // --- 3. الإدارة والتقارير (تأكد من مطابقة أسماء المجلدات) ---
 const UsersList = () => import('@/views/users/UsersList.vue')
 const RolesList = () => import('@/views/roles/RolesList.vue')
 const DailyMovementReport = () => import('@/views/reports/DailyMovementReport.vue')
+const TankLedgerReport = () => import('@/views/reports/TankLedgerReport.vue')
 
 // --- استيراد صفحات التقارير ---
 //const DailyMovementReport = () => import('@/views/reports/DailyMovementReport.vue')
@@ -131,6 +134,12 @@ const routes = [
         component: SupplyLogsList,
         meta: { permission: 'supply.view' },
       },
+      {
+        path: 'inventory-adjustments',
+        name: 'InventoryAdjustmentsView',
+        component: InventoryAdjustmentsView,
+        meta: { permission: 'inventory_adjustment.view' }, // الصلاحية التي أضفناها في الباك-إند
+      },
 
       // =========================================
       // ج. الإدارة والنظام (Admin)
@@ -158,6 +167,12 @@ const routes = [
         meta: { permission: 'reports.view' },
       },
 
+      {
+        path: 'reports/tank-ledger',
+        name: 'TankLedgerReport',
+        component: TankLedgerReport,
+        meta: { permission: 'reports.view' }, // الصلاحية التي أضفناها في الباك-إند
+      },
       // إعادة التوجيه الافتراضية
       { path: '', redirect: '/app/dashboard' },
     ],

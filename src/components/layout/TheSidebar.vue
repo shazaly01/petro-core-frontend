@@ -103,6 +103,7 @@ const authStore = useAuthStore()
 const route = useRoute()
 
 // --- تعريف القائمة الجانبية الجديدة ---
+// --- تعريف القائمة الجانبية الجديدة ---
 const allNavLinks = shallowRef([
   // 1. الرئيسية
   {
@@ -116,13 +117,13 @@ const allNavLinks = shallowRef([
   {
     name: 'البنية التحتية',
     icon: CubeIcon,
-    permission: 'infrastructure.view', // صلاحية المجموعة
+    permission: 'infrastructure.view',
     children: [
       { name: 'أنواع الوقود', routeName: 'FuelTypesList', permission: 'infrastructure.view' },
       { name: 'الجزر', routeName: 'IslandsList', permission: 'infrastructure.view' },
       { name: 'الخزانات', routeName: 'TanksList', permission: 'infrastructure.view' },
       { name: 'المضخات', routeName: 'PumpsList', permission: 'infrastructure.view' },
-      //{ name: 'المسدسات', routeName: 'NozzlesList', permission: 'infrastructure.view' },
+      // { name: 'المسدسات', routeName: 'NozzlesList', permission: 'infrastructure.view' },
     ],
   },
 
@@ -130,12 +131,17 @@ const allNavLinks = shallowRef([
   {
     name: 'العمليات',
     icon: ClipboardDocumentListIcon,
-    permission: 'shift.view', // نستخدم صلاحية الورديات كأذن عام لهذا القسم
+    permission: 'shift.view', // نستخدم صلاحية الورديات كإذن عام لهذا القسم
     children: [
       { name: 'الورديات', routeName: 'ShiftsList', permission: 'shift.view' },
       { name: 'التكليفات', routeName: 'AssignmentsList', permission: 'assignment.view' },
-      // { name: 'المعاملات المالية', routeName: 'TransactionsList', permission: 'transaction.view' },
-      // { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
+      { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
+      // 🛑 إضافة التسويات الجردية هنا
+      {
+        name: 'التسويات الجردية',
+        routeName: 'InventoryAdjustmentsView',
+        permission: 'inventory_adjustment.view',
+      },
     ],
   },
 
@@ -143,13 +149,11 @@ const allNavLinks = shallowRef([
   {
     name: 'التقارير',
     icon: ChartBarIcon,
-    permission: 'reports.view',
+    permission: 'reports.view', // إذن عام للتقارير
     children: [
-      {
-        name: 'الحركة اليومية',
-        routeName: 'DailyMovementReport',
-        permission: 'reports.view',
-      },
+      { name: 'الحركة اليومية', routeName: 'DailyMovementReport', permission: 'reports.view' },
+      // 🛑 إضافة كشف حساب الخزان هنا
+      { name: 'كشف حساب الخزان', routeName: 'TankLedgerReport', permission: 'reports.view' },
     ],
   },
 

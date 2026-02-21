@@ -130,7 +130,7 @@ const formatNumber = (val) => {
 // تنسيق العملة (دينار ليبي) - بـ 3 خانات عشرية
 const formatCurrency = (val) => {
   const number = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 3,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 3,
   }).format(val || 0)
   return `${number} د.ل`

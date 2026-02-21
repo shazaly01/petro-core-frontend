@@ -117,7 +117,7 @@
               </h4>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <AppInput
+              <AppNumberInput
                 id="start_counter_1"
                 v-model="form.start_counter_1"
                 label="عداد البداية (تلقائي)"
@@ -125,7 +125,7 @@
                 step="0.01"
                 disabled
               />
-              <AppInput
+              <AppNumberInput
                 id="end_counter_1"
                 v-model="form.end_counter_1"
                 label="عداد النهاية"
@@ -160,7 +160,7 @@
               </h4>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <AppInput
+              <AppNumberInput
                 id="start_counter_2"
                 v-model="form.start_counter_2"
                 label="عداد البداية (تلقائي)"
@@ -168,7 +168,7 @@
                 step="0.01"
                 disabled
               />
-              <AppInput
+              <AppNumberInput
                 id="end_counter_2"
                 v-model="form.end_counter_2"
                 label="عداد النهاية"
@@ -212,7 +212,7 @@
           </h3>
 
           <div v-if="isEditMode" class="space-y-5 mb-8">
-            <AppInput
+            <AppNumberInput
               id="cash_amount"
               v-model="form.cash_amount"
               label="المبلغ المستلم كاش"
@@ -221,7 +221,7 @@
               placeholder="0.000"
               class="text-black text-lg font-bold"
             />
-            <AppInput
+            <AppNumberInput
               id="bank_amount"
               v-model="form.bank_amount"
               label="مبالغ الشبكة / البنك"
@@ -331,7 +331,7 @@ import {
   CalculatorIcon,
   BanknotesIcon,
 } from '@heroicons/vue/24/outline'
-import AppInput from '@/components/ui/AppInput.vue'
+import AppNumberInput from '@/components/ui/AppNumberInput.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import WorkersDropdown from '@/components/forms/WorkersDropdown.vue'
 import PumpsDropdown from '@/components/forms/PumpsDropdown.vue'

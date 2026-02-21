@@ -1,7 +1,5 @@
-<!-- src\components\ui\QuantityInput.vue -->
 <template>
   <div>
-    <!-- العنوان (Label) -->
     <label
       v-if="label"
       :for="id"
@@ -10,8 +8,10 @@
       {{ label }}
     </label>
 
-    <!-- مجموعة الأزرار -->
-    <div class="flex items-center space-x-2 space-x-reverse mb-2">
+    <div
+      v-if="predefinedQuantities && predefinedQuantities.length > 0"
+      class="flex items-center space-x-2 space-x-reverse mb-2"
+    >
       <button
         v-for="quantity in predefinedQuantities"
         :key="quantity"
@@ -28,7 +28,6 @@
       </button>
     </div>
 
-    <!-- حقل الإدخال اليدوي -->
     <AppInput
       :id="id"
       type="number"
@@ -49,12 +48,11 @@ const props = defineProps({
   modelValue: { type: [Number, String, null], default: null },
   step: { type: String, default: '0.01' },
   placeholder: { type: String, default: 'أو أدخل كمية مخصصة' },
+  // 🛑 تم تحويلها إلى Prop لتكون ديناميكية (فارغة افتراضياً)
+  predefinedQuantities: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['update:modelValue'])
-
-// الكميات المحددة مسبقًا
-const predefinedQuantities = [40000, 50000]
 
 // دالة لتحديث القيمة عند النقر على زر
 const selectQuantity = (quantity) => {

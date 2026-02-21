@@ -79,6 +79,10 @@ const headers = computed(() => [
 ])
 
 const formatCurrency = (val) => {
-  return new Intl.NumberFormat('ar-SD', { style: 'currency', currency: 'SDG' }).format(val)
+  const number = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format(val || 0)
+  return `${number} د.ل`
 }
 </script>
