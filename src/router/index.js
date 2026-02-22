@@ -70,6 +70,13 @@ const routes = [
     component: () => import('@/views/reports/TanksStockPrint.vue'),
     meta: { requiresAuth: true },
   },
+
+  {
+    path: '/print/shift-details',
+    name: 'PrintShiftDetails',
+    component: () => import('@/views/reports/ShiftDetailsPrint.vue'),
+    meta: { requiresAuth: true },
+  },
   // --- 2. المسارات المحمية (Protected) ---
   {
     path: '/app',
@@ -214,6 +221,13 @@ const routes = [
         name: 'TanksStockReport',
         component: () => import('@/views/reports/TanksStockReport.vue'),
         meta: { title: 'أرصدة الخزانات اللحظية' },
+      },
+
+      {
+        path: 'reports/shift-details',
+        name: 'ShiftDetailsReport',
+        component: () => import('@/views/reports/ShiftDetailsReport.vue'),
+        meta: { title: 'تقرير تفصيل الورديات' },
       },
       // إعادة التوجيه الافتراضية
       { path: '', redirect: '/app/dashboard' },

@@ -151,6 +151,7 @@ const allNavLinks = shallowRef([
     icon: ChartBarIcon,
     permission: 'reports.view', // إذن عام للتقارير
     children: [
+      { name: 'الورديات', routeName: 'ShiftDetailsReport', permission: 'reports.view' },
       { name: 'الحركة اليومية', routeName: 'DailyMovementReport', permission: 'reports.view' },
       // 🛑 إضافة كشف حساب الخزان هنا
       { name: 'كشف حساب الخزان', routeName: 'TankLedgerReport', permission: 'reports.view' },

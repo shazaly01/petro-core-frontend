@@ -19,4 +19,8 @@ export default {
   getTanksStockSummary() {
     return apiClient.get('/reports/tanks-stock')
   },
+
+  getShiftDetails(params) {
+    return apiClient.get('/reports/shift-details', { params })
+  },
 }

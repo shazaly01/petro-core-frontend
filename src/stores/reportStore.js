@@ -10,6 +10,7 @@ export const useReportStore = defineStore('report', () => {
   const loading = ref(false)
   const error = ref(null)
   const tanksStockData = ref(null)
+  const shiftDetailsData = ref(null)
 
   // --- Actions ---
 
@@ -76,6 +77,21 @@ export const useReportStore = defineStore('report', () => {
     }
   }
 
+  async function fetchShiftDetails(params = {}) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await reportService.getShiftDetails(params)
+      shiftDetailsData.value = response.data
+    } catch (err) {
+      error.value = 'فشل في جلب تقرير الورديات.'
+      console.error(err)
+      shiftDetailsData.value = null
+    } finally {
+      loading.value = false
+    }
+  }
+
   // --- Return public API ---
   return {
     dailyMovementData,
@@ -84,9 +100,11 @@ export const useReportStore = defineStore('report', () => {
     loading,
     error,
     tanksStockData,
+    shiftDetailsData,
     fetchDailyMovement,
     fetchTankLedger,
     fetchFuelReconciliation, // 🛑 تصدير الدالة
     fetchTanksStockSummary,
+    fetchShiftDetails,
   }
 })
