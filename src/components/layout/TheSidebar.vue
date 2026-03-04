@@ -95,6 +95,7 @@ import {
   ClipboardDocumentListIcon, // للعمليات
   // أيقونات التقارير
   ChartBarIcon,
+  BanknotesIcon,
 } from '@heroicons/vue/24/outline'
 
 defineEmits(['close-sidebar'])
@@ -136,6 +137,11 @@ const allNavLinks = shallowRef([
       { name: 'الورديات', routeName: 'ShiftsList', permission: 'shift.view' },
       { name: 'التكليفات', routeName: 'AssignmentsList', permission: 'assignment.view' },
       { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
+      {
+        name: 'المصروفات',
+        routeName: 'ExpensesList',
+        permission: 'expense.view',
+      },
       // 🛑 إضافة التسويات الجردية هنا
       {
         name: 'التسويات الجردية',

@@ -65,10 +65,9 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <AppInput
         id="invoice_number"
-        label="رقم الفاتورة"
+        label="رقم الاشعار"
         v-model="form.invoice_number"
-        placeholder="INV-..."
-        :required="true"
+        placeholder="123-..."
       />
 
       <AppInput
@@ -76,6 +75,7 @@
         label="اسم السائق"
         v-model="form.driver_name"
         placeholder="اسم السائق"
+        :required="true"
       />
 
       <AppInput
@@ -83,6 +83,7 @@
         label="رقم الشاحنة (اللوحة)"
         v-model="form.truck_plate_number"
         placeholder="أ 123"
+        :required="true"
       />
     </div>
 

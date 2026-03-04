@@ -23,6 +23,7 @@ const TransactionsList = () => import('@/views/operations/transactions/Transacti
 const SupplyLogsList = () => import('@/views/operations/supply-logs/SupplyLogsList.vue')
 const InventoryAdjustmentsView = () =>
   import('@/views/inventory-adjustments/InventoryAdjustmentsView.vue')
+const ExpensesList = () => import('@/views/Expenses/ExpensesList.vue')
 
 // --- 3. الإدارة والتقارير (تأكد من مطابقة أسماء المجلدات) ---
 const UsersList = () => import('@/views/users/UsersList.vue')
@@ -172,6 +173,14 @@ const routes = [
         name: 'InventoryAdjustmentsView',
         component: InventoryAdjustmentsView,
         meta: { permission: 'inventory_adjustment.view' }, // الصلاحية التي أضفناها في الباك-إند
+      },
+      {
+        path: 'expenses', // 🛑 أضف هذا المسار هنا
+        name: 'ExpensesList',
+        component: ExpensesList,
+        meta: {
+          permission: 'expense.view',
+        },
       },
 
       // =========================================

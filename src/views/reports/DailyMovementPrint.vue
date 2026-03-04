@@ -127,7 +127,85 @@
         </table>
       </div>
     </div>
-
+    <div>
+      <div
+        class="bg-white dark:bg-surface-section rounded-xl border border-surface-border shadow-sm overflow-hidden"
+      >
+        <div
+          class="bg-gray-50 dark:bg-gray-800/50 p-4 border-b border-surface-border flex items-center"
+        >
+          <BanknotesIcon class="h-6 w-6 ml-2 text-orange-500" />
+          <h3 class="font-bold text-gray-800 dark:text-white">تفصيل المصروفات</h3>
+        </div>
+        <div class="p-0 overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-800/30">
+              <tr>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  البيان (الوصف)
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  الوردية
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  الوقت
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  المبلغ
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              <tr
+                v-for="expense in reportData.expenses_list"
+                :key="expense.id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-800/20"
+              >
+                <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                  {{ expense.description || 'بدون بيان' }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                  {{ expense.shift_name }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 text-right" dir="ltr">
+                  {{ expense.spent_at }}
+                </td>
+                <td
+                  class="px-4 py-3 text-sm text-orange-600 dark:text-orange-400 font-bold text-right"
+                  dir="ltr"
+                >
+                  {{ formatCurrency(expense.amount) }}
+                </td>
+              </tr>
+              <tr v-if="!reportData.expenses_list || reportData.expenses_list.length === 0">
+                <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                  لا توجد مصروفات مسجلة في هذه الفترة.
+                </td>
+              </tr>
+            </tbody>
+            <tfoot
+              v-if="reportData.expenses_list && reportData.expenses_list.length > 0"
+              class="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-gray-200 dark:border-gray-600"
+            >
+              <tr>
+                <td
+                  colspan="3"
+                  class="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white text-left"
+                >
+                  إجمالي المصروفات:
+                </td>
+                <td
+                  class="px-4 py-4 text-lg font-black text-orange-600 dark:text-orange-400 text-right"
+                  dir="ltr"
+                >
+                  {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
     <div class="mb-8 break-inside-avoid">
       <h2 class="text-sm font-bold bg-gray-200 p-2 mb-2 border border-gray-300">
         حالة الخزانات في نهاية اليوم
@@ -214,14 +292,12 @@ const formatNumber = (value) => {
   }).format(value)
 }
 
-const formatCurrency = (value) => {
-  if (value === undefined || value === null) return '0.00'
-  return (
-    new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value) + ' SDG'
-  )
+const formatCurrency = (val) => {
+  const number = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
+  }).format(val || 0)
+  return `${number} LYD`
 }
 </script>
 

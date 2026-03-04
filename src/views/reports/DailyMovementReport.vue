@@ -13,11 +13,20 @@
       </div>
 
       <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center">
-        <div class="w-full sm:w-auto">
+        <div class="w-full sm:w-auto flex items-center gap-2">
+          <label class="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">من:</label>
           <input
             type="date"
-            v-model="selectedDate"
-            @change="fetchReport"
+            v-model="startDate"
+            class="form-input w-full rounded-md border-gray-300 dark:bg-surface-ground dark:border-surface-border dark:text-white focus:ring-primary focus:border-primary"
+          />
+
+          <label class="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap ml-2"
+            >إلى:</label
+          >
+          <input
+            type="date"
+            v-model="endDate"
             class="form-input w-full rounded-md border-gray-300 dark:bg-surface-ground dark:border-surface-border dark:text-white focus:ring-primary focus:border-primary"
           />
         </div>
@@ -62,7 +71,7 @@
           <BanknotesIcon class="h-6 w-6 ml-2 text-primary" />
           الملخص المالي لورديات اليوم (المغلقة)
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div
             class="bg-white dark:bg-surface-section p-5 rounded-xl border-l-4 border-blue-500 shadow-sm"
           >
@@ -91,6 +100,15 @@
             </p>
             <p class="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-2" dir="ltr">
               {{ formatCurrency(reportData.financial_summary?.total_bank) }}
+            </p>
+          </div>
+
+          <div
+            class="bg-white dark:bg-surface-section p-5 rounded-xl border-l-4 border-orange-500 shadow-sm"
+          >
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">إجمالي المصروفات</p>
+            <p class="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-2" dir="ltr">
+              {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
             </p>
           </div>
 
@@ -220,7 +238,88 @@
           </div>
         </div>
       </div>
-
+      <div>
+        <div
+          class="bg-white dark:bg-surface-section rounded-xl border border-surface-border shadow-sm overflow-hidden"
+        >
+          <div
+            class="bg-gray-50 dark:bg-gray-800/50 p-4 border-b border-surface-border flex items-center"
+          >
+            <BanknotesIcon class="h-6 w-6 ml-2 text-orange-500" />
+            <h3 class="font-bold text-gray-800 dark:text-white">تفصيل المصروفات</h3>
+          </div>
+          <div class="p-0 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-800/30">
+                <tr>
+                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    البيان (الوصف)
+                  </th>
+                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    الوردية
+                  </th>
+                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    الوقت
+                  </th>
+                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    المبلغ
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr
+                  v-for="expense in reportData.expenses_list"
+                  :key="expense.id"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-800/20"
+                >
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                    {{ expense.description || 'بدون بيان' }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    {{ expense.shift_name }}
+                  </td>
+                  <td
+                    class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 text-right"
+                    dir="ltr"
+                  >
+                    {{ expense.spent_at }}
+                  </td>
+                  <td
+                    class="px-4 py-3 text-sm text-orange-600 dark:text-orange-400 font-bold text-right"
+                    dir="ltr"
+                  >
+                    {{ formatCurrency(expense.amount) }}
+                  </td>
+                </tr>
+                <tr v-if="!reportData.expenses_list || reportData.expenses_list.length === 0">
+                  <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                    لا توجد مصروفات مسجلة في هذه الفترة.
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot
+                v-if="reportData.expenses_list && reportData.expenses_list.length > 0"
+                class="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-gray-200 dark:border-gray-600"
+              >
+                <tr>
+                  <td
+                    colspan="3"
+                    class="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white text-left"
+                  >
+                    إجمالي المصروفات:
+                  </td>
+                  <td
+                    class="px-4 py-4 text-lg font-black text-orange-600 dark:text-orange-400 text-right"
+                    dir="ltr"
+                  >
+                    {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
       <div>
         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
           <BeakerIcon class="h-6 w-6 ml-2 text-teal-500" />
@@ -294,7 +393,8 @@ const reportStore = useReportStore()
 const router = useRouter()
 // تعيين تاريخ اليوم افتراضياً
 const today = new Date().toISOString().split('T')[0]
-const selectedDate = ref(today)
+const startDate = ref(today)
+const endDate = ref(today)
 
 // ربط حالة التحميل والبيانات بالـ Store مباشرة
 const loading = computed(() => reportStore.loading)
@@ -303,7 +403,10 @@ const reportData = computed(() => reportStore.dailyMovementData)
 // دالة جلب التقرير
 const fetchReport = async () => {
   try {
-    await reportStore.fetchDailyMovement({ date: selectedDate.value })
+    await reportStore.fetchDailyMovement({
+      start_date: startDate.value,
+      end_date: endDate.value,
+    })
   } catch (error) {
     alert('حدث خطأ أثناء جلب التقرير.')
   }
