@@ -108,7 +108,7 @@
           >
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">إجمالي المصروفات</p>
             <p class="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-2" dir="ltr">
-              {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
+              {{ formatCurrency(reportData.financial_summary?.vouchers_summary?.total_expenses) }}
             </p>
           </div>
 
@@ -164,29 +164,54 @@
               </thead>
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr
-                  v-for="(data, fuelName) in reportData.sales_by_fuel"
-                  :key="fuelName"
+                  v-for="expense in reportData.expenses_list"
+                  :key="expense.id"
                   class="hover:bg-gray-50 dark:hover:bg-gray-800/20"
                 >
                   <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ fuelName }}
+                    {{ expense.description || 'بدون بيان' }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    {{ expense.shift_name }}
                   </td>
                   <td
-                    class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-bold"
+                    class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 text-right"
                     dir="ltr"
                   >
-                    {{ formatNumber(data.liters) }} L
+                    {{ expense.spent_at }}
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300" dir="ltr">
-                    {{ formatCurrency(data.amount) }}
+                  <td
+                    class="px-4 py-3 text-sm text-orange-600 dark:text-orange-400 font-bold text-right"
+                    dir="ltr"
+                  >
+                    {{ formatCurrency(expense.amount) }}
                   </td>
                 </tr>
-                <tr v-if="Object.keys(reportData.sales_by_fuel || {}).length === 0">
-                  <td colspan="3" class="px-4 py-6 text-center text-gray-500">
-                    لا توجد مبيعات مسجلة في هذا اليوم.
+                <tr v-if="!reportData.expenses_list || reportData.expenses_list.length === 0">
+                  <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                    لا توجد مصروفات مسجلة في هذه الفترة.
                   </td>
                 </tr>
               </tbody>
+              <tfoot
+                v-if="reportData.expenses_list && reportData.expenses_list.length > 0"
+                class="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-gray-200 dark:border-gray-600"
+              >
+                <tr>
+                  <td
+                    colspan="3"
+                    class="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white text-left"
+                  >
+                    إجمالي المصروفات:
+                  </td>
+                  <td
+                    class="px-4 py-4 text-lg font-black text-orange-600 dark:text-orange-400 text-right"
+                    dir="ltr"
+                  >
+                    {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>
@@ -246,7 +271,7 @@
             class="bg-gray-50 dark:bg-gray-800/50 p-4 border-b border-surface-border flex items-center"
           >
             <BanknotesIcon class="h-6 w-6 ml-2 text-orange-500" />
-            <h3 class="font-bold text-gray-800 dark:text-white">تفصيل المصروفات</h3>
+            <h3 class="font-bold text-gray-800 dark:text-white">تفصيل الخزينة</h3>
           </div>
           <div class="p-0 overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -297,8 +322,46 @@
                   </td>
                 </tr>
               </tbody>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr
+                  v-for="voucher in reportData.vouchers_list"
+                  :key="voucher.id"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-800/20"
+                >
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                    <span class="text-xs text-gray-500 block mb-1">{{ voucher.type_ar }}</span>
+                    {{ voucher.description || 'بدون بيان' }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    {{ voucher.shift_name }}
+                  </td>
+                  <td
+                    class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 text-right"
+                    dir="ltr"
+                  >
+                    {{ voucher.date }}
+                  </td>
+                  <td
+                    class="px-4 py-3 text-sm font-bold text-right"
+                    :class="
+                      voucher.type === 'deposit'
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-orange-600 dark:text-orange-400'
+                    "
+                    dir="ltr"
+                  >
+                    {{ voucher.type === 'deposit' ? '+' : '-' }}
+                    {{ formatCurrency(voucher.amount) }}
+                  </td>
+                </tr>
+                <tr v-if="!reportData.vouchers_list || reportData.vouchers_list.length === 0">
+                  <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                    لا توجد حركات مالية مسجلة في هذه الفترة.
+                  </td>
+                </tr>
+              </tbody>
               <tfoot
-                v-if="reportData.expenses_list && reportData.expenses_list.length > 0"
+                v-if="reportData.vouchers_list && reportData.vouchers_list.length > 0"
                 class="bg-gray-50 dark:bg-gray-800/50 border-t-2 border-gray-200 dark:border-gray-600"
               >
                 <tr>
@@ -306,13 +369,15 @@
                     colspan="3"
                     class="px-4 py-4 text-sm font-bold text-gray-900 dark:text-white text-left"
                   >
-                    إجمالي المصروفات:
+                    إجمالي المصروفات فقط:
                   </td>
                   <td
                     class="px-4 py-4 text-lg font-black text-orange-600 dark:text-orange-400 text-right"
                     dir="ltr"
                   >
-                    {{ formatCurrency(reportData.financial_summary?.total_expenses) }}
+                    {{
+                      formatCurrency(reportData.financial_summary?.vouchers_summary?.total_expenses)
+                    }}
                   </td>
                 </tr>
               </tfoot>

@@ -11,6 +11,7 @@ export const useReportStore = defineStore('report', () => {
   const error = ref(null)
   const tanksStockData = ref(null)
   const shiftDetailsData = ref(null)
+  const safeTransactionsData = ref(null)
 
   // --- Actions ---
 
@@ -92,6 +93,22 @@ export const useReportStore = defineStore('report', () => {
     }
   }
 
+  async function fetchSafeTransactions(params = {}) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await reportService.getSafeTransactions(params)
+      safeTransactionsData.value = response.data
+    } catch (err) {
+      error.value = 'فشل في جلب تقرير حركة الخزينة.'
+      console.error(err)
+      safeTransactionsData.value = null
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // --- Return public API ---
   return {
     dailyMovementData,
@@ -101,10 +118,12 @@ export const useReportStore = defineStore('report', () => {
     error,
     tanksStockData,
     shiftDetailsData,
+    safeTransactionsData,
     fetchDailyMovement,
     fetchTankLedger,
     fetchFuelReconciliation, // 🛑 تصدير الدالة
     fetchTanksStockSummary,
     fetchShiftDetails,
+    fetchSafeTransactions,
   }
 })

@@ -138,9 +138,9 @@ const allNavLinks = shallowRef([
       { name: 'التكليفات', routeName: 'AssignmentsList', permission: 'assignment.view' },
       { name: 'سجل التوريدات', routeName: 'SupplyLogsList', permission: 'supply.view' },
       {
-        name: 'المصروفات',
-        routeName: 'ExpensesList',
-        permission: 'expense.view',
+        name: 'السندات المالية',
+        routeName: 'VouchersList', // يطابق الاسم في ملف router/index.js
+        permission: 'voucher.view', // يطابق الصلاحية في قاعدة البيانات
       },
       // 🛑 إضافة التسويات الجردية هنا
       {
@@ -163,6 +163,7 @@ const allNavLinks = shallowRef([
       { name: 'كشف حساب الخزان', routeName: 'TankLedgerReport', permission: 'reports.view' },
       { name: 'حركة المخزون', routeName: 'DailySalesMovement', permission: 'reports.view' },
       { name: 'الخزانات', routeName: 'TanksStockReport', permission: 'reports.view' },
+      { name: 'حركة الخزينة', routeName: 'SafeTransactionsReport', permission: 'reports.view' },
     ],
   },
 

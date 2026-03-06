@@ -23,4 +23,8 @@ export default {
   getShiftDetails(params) {
     return apiClient.get('/reports/shift-details', { params })
   },
+
+  getSafeTransactions(params) {
+    return apiClient.get('/reports/safe-transactions', { params })
+  },
 }

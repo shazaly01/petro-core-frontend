@@ -23,13 +23,15 @@ const TransactionsList = () => import('@/views/operations/transactions/Transacti
 const SupplyLogsList = () => import('@/views/operations/supply-logs/SupplyLogsList.vue')
 const InventoryAdjustmentsView = () =>
   import('@/views/inventory-adjustments/InventoryAdjustmentsView.vue')
-const ExpensesList = () => import('@/views/Expenses/ExpensesList.vue')
+const VouchersList = () => import('@/views/Vouchers/VouchersList.vue')
 
 // --- 3. الإدارة والتقارير (تأكد من مطابقة أسماء المجلدات) ---
 const UsersList = () => import('@/views/users/UsersList.vue')
 const RolesList = () => import('@/views/roles/RolesList.vue')
 const DailyMovementReport = () => import('@/views/reports/DailyMovementReport.vue')
 const TankLedgerReport = () => import('@/views/reports/TankLedgerReport.vue')
+const SafeTransactionsReport = () => import('@/views/reports/SafeTransactionsReport.vue')
+const SafeTransactionsPrint = () => import('@/views/reports/SafeTransactionsPrint.vue')
 
 // --- استيراد صفحات التقارير ---
 //const DailyMovementReport = () => import('@/views/reports/DailyMovementReport.vue')
@@ -77,6 +79,12 @@ const routes = [
     name: 'PrintShiftDetails',
     component: () => import('@/views/reports/ShiftDetailsPrint.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/print/safe-transactions',
+    name: 'PrintSafeTransactions',
+    component: SafeTransactionsPrint,
+    meta: { requiresAuth: true }, // حماية المسار لضمان تسجيل الدخول فقط
   },
   // --- 2. المسارات المحمية (Protected) ---
   {
@@ -175,11 +183,11 @@ const routes = [
         meta: { permission: 'inventory_adjustment.view' }, // الصلاحية التي أضفناها في الباك-إند
       },
       {
-        path: 'expenses', // 🛑 أضف هذا المسار هنا
-        name: 'ExpensesList',
-        component: ExpensesList,
+        path: 'vouchers',
+        name: 'VouchersList',
+        component: VouchersList,
         meta: {
-          permission: 'expense.view',
+          permission: 'voucher.view', // 🛑 تأكدنا من تطابقها مع Seeder الصلاحيات
         },
       },
 
@@ -202,6 +210,12 @@ const routes = [
       // =========================================
       // د. التقارير (Reports)
       // =========================================
+      {
+        path: 'reports/safe-transactions',
+        name: 'SafeTransactionsReport',
+        component: SafeTransactionsReport,
+        meta: { permission: 'reports.view', title: 'تقرير حركة الخزينة' },
+      },
       {
         path: 'reports/daily-movement',
         name: 'DailyMovementReport',

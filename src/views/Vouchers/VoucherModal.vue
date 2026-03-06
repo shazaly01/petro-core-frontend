@@ -17,8 +17,8 @@
             class="flex items-center justify-between p-4 border-b border-surface-border bg-surface-ground"
           >
             <h3 class="text-lg font-bold text-text-primary flex items-center gap-2">
-              <i class="pi pi-wallet text-primary"></i>
-              إدارة المصروفات
+              <i class="pi pi-money-bill text-primary"></i>
+              سند مالي جديد (إيداع/سحب/مصروف)
             </h3>
             <button
               @click="$emit('close')"
@@ -29,7 +29,7 @@
           </div>
 
           <div class="p-0">
-            <ExpenseForm @success="handleSuccess" @cancel="$emit('close')" />
+            <VoucherForm @success="handleSuccess" @cancel="$emit('close')" />
           </div>
         </div>
       </Transition>
@@ -38,7 +38,8 @@
 </template>
 
 <script setup>
-import ExpenseForm from './ExpenseForm.vue'
+// 🛑 تحديث الاستيراد إلى الملف الجديد
+import VoucherForm from './VoucherForm.vue'
 
 // التعريفات البرمجية
 const props = defineProps({
