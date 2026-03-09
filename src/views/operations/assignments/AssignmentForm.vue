@@ -79,6 +79,7 @@
               label="المضخة المستخدمة"
               :required="true"
               :disabled="isEditMode"
+              :only-available="true"
             />
           </div>
         </div>
@@ -395,13 +396,23 @@ onMounted(async () => {
 
 watch(
   () => form.pump_id,
-  async (newPumpId) => {
+  (newPumpId) => {
+    // حذفنا async لأن العملية الآن لحظية من الذاكرة
     if (!isEditMode.value && newPumpId) {
-      const p = await pumpStore.getPumpById(newPumpId)
+      // 🛑 استخدام الوظيفة الجديدة للبحث في المصفوفة
+      const p = pumpStore.getPumpFromList(newPumpId)
+
       if (p) {
-        form.start_counter_1 = p.current_counter_1
-        form.start_counter_2 = p.current_counter_2
-        form.unit_price = p.tank?.fuelType?.current_price || p.unit_price || 0
+        // تعبئة العدادات الافتتاحية من آخر قراءة للمضخة
+        form.start_counter_1 = Number(p.current_counter_1)
+        form.start_counter_2 = Number(p.current_counter_2)
+
+        // تعبئة سعر اللتر الحالي من الخزان المرتبط بالمضخة
+        form.unit_price = p.tank?.fuelType?.current_price || 0
+
+        // تصفير العدادات النهائية مبدئياً لتجنب الحسابات القديمة
+        form.end_counter_1 = ''
+        form.end_counter_2 = ''
       }
     }
   },

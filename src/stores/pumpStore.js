@@ -12,11 +12,13 @@ export const usePumpStore = defineStore('pump', () => {
 
   // --- Actions ---
 
-  async function fetchPumps(page = 1, search = '') {
+  // 🛑 التعديل: استقبال `available` وتمريره
+  async function fetchPumps(page = 1, search = '', available = null) {
     loading.value = true
     error.value = null
     try {
-      const response = await pumpService.get(page, search)
+      // تمرير الفلتر إلى الـ Service
+      const response = await pumpService.get(page, search, available)
       pumps.value = response.data.data
       pagination.value = response.data.meta
     } catch (err) {
@@ -85,6 +87,10 @@ export const usePumpStore = defineStore('pump', () => {
     }
   }
 
+  const getPumpFromList = (id) => {
+    return pumps.value.find((p) => p.id === id)
+  }
+
   // --- Return public API ---
   return {
     pumps,
@@ -97,5 +103,6 @@ export const usePumpStore = defineStore('pump', () => {
     createPump,
     updatePump,
     deletePump,
+    getPumpFromList,
   }
 })

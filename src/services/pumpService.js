@@ -1,35 +1,35 @@
 import apiClient from './apiClient'
 
-// تم تحديد المسار بناءً على routes/api.php
 const resource = '/pumps'
 
 export default {
-  // دالة جلب القائمة مع الترحيل والبحث
-  get(page = 1, search = '') {
-    return apiClient.get(resource, {
-      params: {
-        page: page,
-        search: search,
-      },
-    })
+  // 🛑 التعديل: إضافة `available` كمعامل اختياري
+  get(page = 1, search = '', available = null) {
+    const params = {
+      page: page,
+      search: search,
+    }
+
+    // إذا تم طلب المضخات المتاحة فقط، نضيفها للطلب
+    if (available) {
+      params.available = available
+    }
+
+    return apiClient.get(resource, { params })
   },
 
-  // البحث بواسطة المعرف
   find(id) {
     return apiClient.get(`${resource}/${id}`)
   },
 
-  // إنشاء مضخة جديدة
   create(payload) {
     return apiClient.post(resource, payload)
   },
 
-  // تحديث بيانات مضخة
   update(id, payload) {
     return apiClient.put(`${resource}/${id}`, payload)
   },
 
-  // حذف مضخة
   delete(id) {
     return apiClient.delete(`${resource}/${id}`)
   },
