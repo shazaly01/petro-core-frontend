@@ -218,8 +218,8 @@
               v-model="form.cash_amount"
               label="المبلغ المستلم كاش"
               type="number"
-              step="0.001"
-              placeholder="0.000"
+              step="0.0001"
+              placeholder="0.0000"
               class="text-black text-lg font-bold"
             />
             <AppNumberInput
@@ -423,7 +423,7 @@ watch(
 const formatCurrency = (val) => {
   const num = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0, // 🛑 التعديل هنا: جعلناه 0 لإخفاء الكسور الصفرية
-    maximumFractionDigits: 3, // سيظهر الكسر فقط إذا كان موجوداً (حتى 3 خانات)
+    maximumFractionDigits: 4, // سيظهر الكسر فقط إذا كان موجوداً (حتى 3 خانات)
   }).format(val || 0)
 
   return `${num} د.ل`
@@ -446,17 +446,17 @@ const calculatedTotalLiters = computed(() => {
 })
 
 const calculatedExpectedAmount = computed(() => {
-  return (parseFloat(calculatedTotalLiters.value) * form.unit_price).toFixed(3)
+  return (parseFloat(calculatedTotalLiters.value) * form.unit_price).toFixed(4)
 })
 
 const calculatedTotalPaid = computed(() => {
-  return ((parseFloat(form.cash_amount) || 0) + (parseFloat(form.bank_amount) || 0)).toFixed(3)
+  return ((parseFloat(form.cash_amount) || 0) + (parseFloat(form.bank_amount) || 0)).toFixed(4)
 })
 
 const calculatedDifference = computed(() => {
   return (
     parseFloat(calculatedTotalPaid.value) - parseFloat(calculatedExpectedAmount.value)
-  ).toFixed(3)
+  ).toFixed(4)
 })
 
 // --- الحفظ وإرسال البيانات ---
