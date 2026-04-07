@@ -1,3 +1,4 @@
+<!--src\views\operations\assignments\AssignmentsList.vue-->
 <template>
   <div class="p-6">
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -28,7 +29,12 @@
       </div>
     </div>
 
-    <AssignmentsTable :items="assignments" :loading="loading" @edit="goToEditPage" />
+    <AssignmentsTable
+      :items="assignments"
+      :loading="loading"
+      @edit="goToEditPage"
+      @delete="handleDelete"
+    />
   </div>
 </template>
 
@@ -68,5 +74,19 @@ const goToEditPage = (item) => {
     name: 'AssignmentEdit',
     params: { id: item.id },
   })
+}
+
+// 🛑 أضف هذه الدالة للتعامل مع حدث الحذف
+const handleDelete = async (id) => {
+  if (window.confirm('هل أنت متأكد من حذف هذا التكليف؟ سيتم حذفه برمجياً (Soft Delete).')) {
+    try {
+      await store.deleteAssignment(id)
+      // تحديث القائمة بعد نجاح الحذف
+      store.fetchAssignments(1, searchQuery.value)
+    } catch (error) {
+      console.error('Error deleting assignment:', error)
+      alert(store.error || 'حدث خطأ أثناء محاولة الحذف.')
+    }
+  }
 }
 </script>

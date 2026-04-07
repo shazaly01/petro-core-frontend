@@ -1,3 +1,4 @@
+<!--src\views\operations\assignments\AssignmentsTable.vue-->
 <template>
   <AppTable
     :headers="headers"
@@ -86,6 +87,15 @@
         >
           <PencilSquareIcon class="h-5 w-5" />
         </button>
+
+        <button
+          v-if="isSuperAdmin"
+          @click.stop="$emit('delete', item.id)"
+          class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+          title="حذف التكليف (صلاحية خاصة)"
+        >
+          <TrashIcon class="h-5 w-5" />
+        </button>
       </div>
     </template>
   </AppTable>
@@ -94,14 +104,23 @@
 <script setup>
 import { computed } from 'vue'
 import AppTable from '@/components/ui/AppTable.vue'
-import { PencilSquareIcon } from '@heroicons/vue/24/outline'
+// 🛑 1. أضف استيراد أيقونة الحذف (TrashIcon) بجانب القلم
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+
+// 🛑 2. أضف استيراد الـ Auth Store للتحقق من السوبر أدمن
+import { useAuthStore } from '@/stores/authStore'
 
 defineProps({
   items: Array,
   loading: Boolean,
 })
 
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['edit', 'delete'])
+
+const authStore = useAuthStore()
+const isSuperAdmin = computed(() => {
+  return authStore.user?.roles?.some((role) => role.name === 'Super Admin')
+})
 
 // 🛑 تحديث الأعمدة لتتناسب مع الهيكلة الجديدة
 const headers = computed(() => [
