@@ -19,10 +19,8 @@
           class="form-select rounded-md border-gray-300 dark:bg-surface-ground dark:border-surface-border dark:text-white text-sm"
         >
           <option value="">جميع الحركات</option>
-          <option value="deposit">إيداعات فقط (+)</option>
-          <option value="expense">مصروفات فقط (-)</option>
-          <option value="withdrawal">مسحوبات/توريد بنكي (-)</option>
-          <option value="settlement">تسويات جردية</option>
+          <option value="in">وارد / إيداعات (+)</option>
+          <option value="out">صادر / مسحوبات (-)</option>
         </select>
 
         <div class="flex items-center gap-2">
@@ -190,7 +188,7 @@
                   :class="getAmountColor(voucher.type)"
                   dir="ltr"
                 >
-                  {{ voucher.type === 'deposit' ? '+' : '-' }} {{ formatCurrency(voucher.amount) }}
+                  {{ voucher.type === 'in' ? '+' : '-' }} {{ formatCurrency(voucher.amount) }}
                 </td>
               </tr>
               <tr v-if="!reportData.vouchers || reportData.vouchers.length === 0">
@@ -209,7 +207,7 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useReportStore } from '@/stores/reportStore'
-import { useRouter } from 'vue-router' // 🛑 إضافة الروتر للطباعة
+import { useRouter } from 'vue-router'
 import AppButton from '@/components/ui/AppButton.vue'
 
 const reportStore = useReportStore()
@@ -236,7 +234,7 @@ const fetchReport = async () => {
   }
 }
 
-// 🛑 دالة الطباعة
+// دالة الطباعة
 const printReport = () => {
   if (!reportData.value) return
 
@@ -260,25 +258,20 @@ const formatCurrency = (val) => {
   return `${number} LYD`
 }
 
+// 🛑 التعديل الثالث: تحديث الألوان بناءً على الأنواع الجديدة in / out
 const getTypeBadgeClass = (type) => {
-  switch (type) {
-    case 'deposit':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-    case 'expense':
-      return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-    case 'withdrawal':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-    case 'settlement':
-      return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-    default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+  if (type === 'in') {
+    return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+  } else if (type === 'out') {
+    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
   }
+  return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
 }
 
+// 🛑 التعديل الرابع: تحديث ألوان المبالغ بناءً على in / out
 const getAmountColor = (type) => {
-  if (type === 'deposit') return 'text-green-600 dark:text-green-400'
-  if (type === 'expense') return 'text-orange-600 dark:text-orange-400'
-  if (type === 'withdrawal') return 'text-red-600 dark:text-red-400'
-  return 'text-purple-600 dark:text-purple-400'
+  if (type === 'in') return 'text-green-600 dark:text-green-400'
+  if (type === 'out') return 'text-red-600 dark:text-red-400'
+  return 'text-gray-600 dark:text-gray-400'
 }
 </script>

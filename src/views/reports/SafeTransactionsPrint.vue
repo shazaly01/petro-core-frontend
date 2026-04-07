@@ -84,7 +84,7 @@
               {{ voucher.date }}
             </td>
             <td class="p-2 font-bold text-left whitespace-nowrap" dir="ltr">
-              {{ voucher.type === 'deposit' ? '+' : '-' }} {{ formatCurrency(voucher.amount) }}
+              {{ voucher.type === 'in' ? '+' : '-' }} {{ formatCurrency(voucher.amount) }}
             </td>
           </tr>
           <tr v-if="!reportData.vouchers || reportData.vouchers.length === 0">
